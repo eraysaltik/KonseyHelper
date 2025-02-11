@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Age of Empires II Team Comparison</h1>
+    
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="useFilteredData">
+            <label class="form-check-label" for="useFilteredData">
+                Use only 2024-2025 data
+            </label>
+        </div>
+        <button id="loadData" class="btn btn-primary">Load Player Data</button>
+    </div>
+
+    <div id="playerTable" class="mb-4" style="display: none;">
+        <h3>Player Metrics</h3>
+        <table id="metricsTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Current Elo</th>
+                    <th>Weighted Average</th>
+                    <th>Maximum Elo</th>
+                    <th>Minimum Elo</th>
+                    <th>Average Elo</th>
+                    <th>Median Elo</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="modeSelection" class="mb-4" style="display: none;">
+        <h3>Select Mode</h3>
+        <div class="btn-group" role="group">
+            <button id="compareTeams" class="btn btn-primary">Compare Specific Teams</button>
+            <button id="findBalanced" class="btn btn-primary">Find Balanced Teams</button>
+        </div>
+    </div>
+
+    <div id="teamSelection" class="mb-4" style="display: none;">
+        <div id="manualSelection">
+            <h3>Select Teams</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Team A</h4>
+                    <select id="teamASelect" multiple class="form-select" size="4"></select>
+                </div>
+                <div class="col-md-6">
+                    <h4>Team B</h4>
+                    <select id="teamBSelect" multiple class="form-select" size="4"></select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="balancedSelection" style="display: none;">
+            <h3>Select 8 Players</h3>
+            <select id="balancedPlayersSelect" multiple class="form-select" size="8"></select>
+        </div>
+        
+        <button id="calculateResults" class="btn btn-success mt-3">Calculate Results</button>
+    </div>
+
+    <div id="results" class="mb-4" style="display: none;">
+        <h3>Results</h3>
+        <div id="resultsContent"></div>
+    </div>
+</div>
+{% endblock %} 
