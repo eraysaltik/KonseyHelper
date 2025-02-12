@@ -13,23 +13,20 @@ def fetch_json(url):
     #print(response.text[:500])  # Print first 500 chars to avoid overwhelming output
     return response.json()
 
-def calculate_metrics(history, use_filtered_data):
-    """
-    Given a list of history records (each with keys 'date' and 'elo'),
-    sort them chronologically and calculate:
-      - Arithmetic mean
-      - Weighted average (weights = 1,2,...,n)
-      - Maximum Elo reached
-      - Current Elo (latest value)
-      - Trend (current minus earliest Elo)
-    """
-    if use_filtered_data:
-        # Filter history to include only entries from 2024 and 2025
-        history = [entry for entry in history if entry["date"].startswith("2024") or entry["date"].startswith("2025")]
-    
-    if not history:
-        return None
-    
+def calculate_metrics(history, filter_type='all'):
+
+    if filter_type != 'all':
+        # Filter based on selected year(s)
+        filtered_history = []
+        for h in history:
+            date = datetime.fromisoformat(h['date'].replace('Z', '+00:00'))
+            if filter_type == '2025' and date.year == 2025:
+                filtered_history.append(h)
+            elif filter_type == '2024-2025' and date.year >= 2024:
+                filtered_history.append(h)
+        
+        history = filtered_history if filtered_history else history
+
     # Sort history by date (assumes date in ISO format)
     sorted_history = sorted(history, key=lambda x: x["date"])
     

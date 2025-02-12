@@ -5,21 +5,54 @@ from app.team_comparison import (fetch_json, calculate_metrics, calculate_team_s
                                calculate_series_probabilities)
 
 PLAYERS = [
-        ("Saltik", "https://www.aoe2insights.com/user/13028522/elo-history/3/"),
-        #("Saltik2", "https://www.aoe2insights.com/user/2739525/elo-history/3/"), #Lanchester
-        ("Eren", "https://www.aoe2insights.com/user/2471692/elo-history/3/"),
-        ("Sencer", "https://www.aoe2insights.com/user/3915596/elo-history/3/"),
-        ("Dinc", "https://www.aoe2insights.com/user/4970559/elo-history/3/"),
-        ("Salim", "https://www.aoe2insights.com/user/1444557/elo-history/3/"),
-        ("Emre", "https://www.aoe2insights.com/user/2079039/elo-history/3/"),
-        ("Kaan", "https://www.aoe2insights.com/user/12397390/elo-history/3/"),
-        ("Hakan", "https://www.aoe2insights.com/user/1528769/elo-history/3/"),
-        ("JR", "https://www.aoe2insights.com/user/2943236/elo-history/3/"),
-        ("Yahya", "https://www.aoe2insights.com/user/3138965/elo-history/3/"),
-        ("Kursad", "https://www.aoe2insights.com/user/3545515/elo-history/3/"),
-        ("Kuzen", "https://www.aoe2insights.com/user/3778162/elo-history/3/"),
-        ("Mustafa", "https://www.aoe2insights.com/user/5094125/elo-history/3/"),
-        ("Berkay", "https://www.aoe2insights.com/user/1491145/elo-history/3/")
+    {
+        "name": "Saltik",
+        "url": "https://www.aoe2insights.com/user/13028522/elo-history/3/"
+    },
+    {
+        "name": "Eren",
+        "url": "https://www.aoe2insights.com/user/2471692/elo-history/3/"
+    },
+    {
+        "name": "Sencer",
+        "url": "https://www.aoe2insights.com/user/3915596/elo-history/3/"
+    },
+    {
+        "name": "Dinc",
+        "url": "https://www.aoe2insights.com/user/4970559/elo-history/3/"
+    },
+    {
+        "name": "Salim",
+        "url": "https://www.aoe2insights.com/user/1444557/elo-history/3/"
+    },
+    {
+        "name": "Emre",
+        "url": "https://www.aoe2insights.com/user/2079039/elo-history/3/"
+    },
+    {
+        "name": "Kaan",
+        "url": "https://www.aoe2insights.com/user/12397390/elo-history/3/"
+    },
+    {
+        "name": "Hakan",
+        "url": "https://www.aoe2insights.com/user/1528769/elo-history/3/"
+    },
+    {
+        "name": "JR",
+        "url": "https://www.aoe2insights.com/user/2943236/elo-history/3/"
+    },
+    {
+        "name": "Yahya",
+        "url": "https://www.aoe2insights.com/user/3138965/elo-history/3/"
+    },
+    {
+        "name": "Kursad",
+        "url": "https://www.aoe2insights.com/user/3545515/elo-history/3/"
+    },
+    {
+        "name": "Kuzen",
+        "url": "https://www.aoe2insights.com/user/3778162/elo-history/3/"
+    }
 ]
 
 @app.route('/')
@@ -29,14 +62,14 @@ def index():
 @app.route('/get_player_metrics', methods=['POST'])
 def get_player_metrics():
     data = request.get_json()
-    use_filtered_data = data.get('useFilteredData', False)
+    filter_type = data.get('filterType', 'all')
     
     players_metrics = []
     for player in PLAYERS:
         try:
             raw_data = fetch_json(player['url'])
             history = [{"date": date, "elo": elo} for date, elo in raw_data.items()]
-            metrics = calculate_metrics(history, use_filtered_data)
+            metrics = calculate_metrics(history, filter_type)
             if metrics:
                 metrics['name'] = player['name']
                 players_metrics.append(metrics)

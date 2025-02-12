@@ -9,13 +9,13 @@ $(document).ready(function() {
 });
 
 function loadPlayerData() {
-    const useFilteredData = $('#useFilteredData').is(':checked');
+    const filterValue = $('#dataFilter').val();
     
     $.ajax({
         url: '/get_player_metrics',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ useFilteredData }),
+        data: JSON.stringify({ filterType: filterValue }),
         success: function(data) {
             playerMetrics = data;
             displayMetricsTable();
