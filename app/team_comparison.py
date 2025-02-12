@@ -156,7 +156,8 @@ def calculate_series_probabilities(p_win):
 def main():
     # Player names and URLs for the eight players' Elo histories
     players = [
-        ("Saltik", "https://www.aoe2insights.com/user/2739525/elo-history/3/"),
+        ("Saltik", "https://www.aoe2insights.com/user/13028522/elo-history/3/"),
+        #("Saltik2", "https://www.aoe2insights.com/user/2739525/elo-history/3/"), #Lanchester
         ("Eren", "https://www.aoe2insights.com/user/2471692/elo-history/3/"),
         ("Sencer", "https://www.aoe2insights.com/user/3915596/elo-history/3/"),
         ("Dinc", "https://www.aoe2insights.com/user/4970559/elo-history/3/"),
