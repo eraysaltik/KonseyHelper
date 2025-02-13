@@ -8,4 +8,7 @@ MarkupSafe==2.1.5
 urllib3==2.2.1
 certifi==2024.2.2
 charset-normalizer==3.3.2
-idna==3.6 
+idna==3.6
+flask-cors==4.0.0
+pandas==2.2.0
+numpy==1.26.4 
