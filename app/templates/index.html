@@ -5,14 +5,23 @@
     <h1>Age of Empires II Team Comparison</h1>
     
     <div class="mb-3">
-        <div class="form-check">
-            <select class="form-select" id="dataFilter">
-                <option value="all">All Historical Data</option>
+        <div class="form-group mb-4">
+            <label for="dataFilter">Data Filter:</label>
+            <select id="dataFilter" class="form-select">
+                <option value="2025" selected>2025 Data Only</option>
                 <option value="2024-2025">2024-2025 Data</option>
-                <option value="2025">2025 Data Only</option>
+                <option value="all">All Historical Data</option>
             </select>
         </div>
         <button id="loadData" class="btn btn-primary mt-2">Load Player Data</button>
+        <div id="loadingIndicator" class="alert alert-info mt-2" style="display: none;">
+            <div class="d-flex align-items-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span>Loading player data and position metrics... Please wait.</span>
+            </div>
+        </div>
     </div>
 
     <div id="playerTable" class="mb-4" style="display: none;">
@@ -28,6 +37,15 @@
                     <th>Average Elo</th>
                     <th>Median Elo</th>
                     <th>Trend</th>
+                    <th>Last 60 Days Games</th>
+                    <th>Last 60 Days Win Rate</th>
+                    <th>Recent Performance Multiplier</th>
+                    <th>Flank Multiplier</th>
+                    <th>Flank Games</th>
+                    <th>Flank Win Rate</th>
+                    <th>Pocket Multiplier</th>
+                    <th>Pocket Games</th>
+                    <th>Pocket Win Rate</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -45,21 +63,46 @@
     <div id="teamSelection" class="mb-4" style="display: none;">
         <div id="manualSelection">
             <h3>Select Teams</h3>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="usePositions">
+                <label class="form-check-label" for="usePositions">
+                    Use position-based calculations
+                </label>
+            </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="useRecentPerformance">
+                <label class="form-check-label" for="useRecentPerformance">
+                    Use Recent Performance Multiplier
+                </label>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <h4>Team A</h4>
-                    <select id="teamASelect" multiple class="form-select" size="4"></select>
+                    <div id="teamAContainer">
+                        <div class="player-selection mb-2">
+                            <select class="form-select player-select"></select>
+                            <select class="form-select position-select mt-1">
+                                <option value="flank">Flank</option>
+                                <option value="pocket">Pocket</option>
+                            </select>
+                        </div>
+                        <!-- Will be duplicated by JS for each player -->
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <h4>Team B</h4>
-                    <select id="teamBSelect" multiple class="form-select" size="4"></select>
+                    <div id="teamBContainer">
+                        <div class="player-selection mb-2">
+                            <select class="form-select player-select"></select>
+                            <select class="form-select position-select mt-1">
+                                <option value="flank">Flank</option>
+                                <option value="pocket">Pocket</option>
+                            </select>
+                        </div>
+                        <!-- Will be duplicated by JS for each player -->
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div id="balancedSelection" style="display: none;">
-            <h3>Select 8 Players</h3>
-            <select id="balancedPlayersSelect" multiple class="form-select" size="8"></select>
         </div>
         
         <button id="calculateResults" class="btn btn-success mt-3">Calculate Results</button>
@@ -68,6 +111,24 @@
     <div id="results" class="mb-4" style="display: none;">
         <h3>Results</h3>
         <div id="resultsContent"></div>
+    </div>
+
+    <div id="balancedTeamsSelection" class="mb-4" style="display: none;">
+        <h3>Select 8 Players for Balanced Teams</h3>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="usePositionsBalanced">
+            <label class="form-check-label" for="usePositionsBalanced">
+                Use position-based calculations
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="useRecentPerformanceBalanced">
+            <label class="form-check-label" for="useRecentPerformanceBalanced">
+                Use Recent Performance Multiplier
+            </label>
+        </div>
+        <select id="balancedPlayersSelect" class="form-select" multiple size="12"></select>
+        <button id="calculateBalancedResults" class="btn btn-success mt-3">Calculate Results</button>
     </div>
 </div>
 {% endblock %} 

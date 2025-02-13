@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from itertools import combinations
+from itertools import combinations, permutations
 
 def fetch_json(url):
     """
@@ -92,41 +92,66 @@ def calculate_team_strength(metrics_list):
     }
     return team_metrics
 
-def find_best_team_combination(players_metrics, player_names):
-    """
-    Find the most balanced team combination from 8 players.
-    Returns the best combination with closest to 50% win probability.
-    """
+def find_best_team_combination(metrics_list, player_names, use_positions=False, use_recent_performance=False):
     best_diff = float('inf')
     best_teams = None
+    best_positions = None
     
-    # Get all possible combinations of 4 players for team A
-    for team_a_indices in combinations(range(8), 4):
-        team_b_indices = tuple(i for i in range(8) if i not in team_a_indices)
+    for team_a in combinations(range(len(metrics_list)), 4):
+        team_b = list(set(range(len(metrics_list))) - set(team_a))
         
-        # Get metrics for both teams
-        team_a_metrics = [players_metrics[i] for i in team_a_indices]
-        team_b_metrics = [players_metrics[i] for i in team_b_indices]
-        
-        # Calculate team strengths
-        team_a_strength = calculate_team_strength(team_a_metrics)
-        team_b_strength = calculate_team_strength(team_b_metrics)
-        
-        # Calculate win probability
-        expected_a = head_to_head_expected(team_a_strength["weighted_average"], 
-                                         team_b_strength["weighted_average"])
-        
-        # Check how close it is to 50%
-        diff = abs(0.5 - expected_a)
-        if diff < best_diff:
-            best_diff = diff
-            best_teams = (
-                [player_names[i] for i in team_a_indices],
-                [player_names[i] for i in team_b_indices],
-                expected_a
-            )
+        # If using positions, try different position combinations
+        if use_positions:
+            positions_a = list(permutations(['flank', 'flank', 'pocket', 'pocket'], 4))
+            positions_b = list(permutations(['flank', 'flank', 'pocket', 'pocket'], 4))
+        else:
+            positions_a = [None]
+            positions_b = [None]
+            
+        for pos_a in positions_a:
+            for pos_b in positions_b:
+                team_a_metrics = []
+                team_b_metrics = []
+                
+                # Process team A
+                for i, player_idx in enumerate(team_a):
+                    adjusted = metrics_list[player_idx].copy()
+                    if use_positions and pos_a:
+                        mult = adjusted[f"{pos_a[i]}_multiplier"]
+                        adjusted['weighted_average'] *= mult if mult else 1
+                    if use_recent_performance:
+                        perf_mult = adjusted.get('recent_performance_multiplier', 1.0)
+                        adjusted['weighted_average'] *= perf_mult
+                    team_a_metrics.append(adjusted)
+                
+                # Process team B
+                for i, player_idx in enumerate(team_b):
+                    adjusted = metrics_list[player_idx].copy()
+                    if use_positions and pos_b:
+                        mult = adjusted[f"{pos_b[i]}_multiplier"]
+                        adjusted['weighted_average'] *= mult if mult else 1
+                    if use_recent_performance:
+                        perf_mult = adjusted.get('recent_performance_multiplier', 1.0)
+                        adjusted['weighted_average'] *= perf_mult
+                    team_b_metrics.append(adjusted)
+                
+                team_a_strength = calculate_team_strength(team_a_metrics)
+                team_b_strength = calculate_team_strength(team_b_metrics)
+                
+                diff = abs(team_a_strength['weighted_average'] - team_b_strength['weighted_average'])
+                
+                if diff < best_diff:
+                    best_diff = diff
+                    team_a_names = [{'name': player_names[i], 'position': pos_a[j] if pos_a else None} 
+                                  for j, i in enumerate(team_a)]
+                    team_b_names = [{'name': player_names[i], 'position': pos_b[j] if pos_b else None} 
+                                  for j, i in enumerate(team_b)]
+                    best_teams = (team_a_names, team_b_names)
+                    best_positions = {'teamA': pos_a, 'teamB': pos_b} if use_positions else None
     
-    return best_teams
+    expected_win_rate = 0.5  # For balanced teams
+    return (best_teams[0], best_teams[1], expected_win_rate, best_positions, 
+            team_a_metrics, team_b_metrics)
 
 def calculate_series_probabilities(p_win):
     """
