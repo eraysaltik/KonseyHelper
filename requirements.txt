@@ -11,4 +11,8 @@ charset-normalizer==3.3.2
 idna==3.6
 flask-cors==4.0.0
 pandas==2.2.0
-numpy==1.26.4 
+numpy==1.26.4
+beautifulsoup4==4.12.3
+lxml==5.1.0
+datatables==0.4.9 
+
